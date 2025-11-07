@@ -12,7 +12,11 @@ const Notification = require('../models/Notification');
 router.post('/', protect, upload.single('image'), async (req, res) => {
   try {
     const { text } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : null;
+    // Create absolute URL for images in production
+    const baseURL = process.env.NODE_ENV === 'production' 
+      ? process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`
+      : '';
+    const image = req.file ? `${baseURL}/uploads/${req.file.filename}` : null;
 
     // Validate that at least text or image is provided
     if (!text && !image) {

@@ -96,12 +96,16 @@ git push -u origin main
    - **Name**: `REACT_APP_API_URL`
    - **Value**: `https://your-backend-url.onrender.com/api`
    - (Use your Render backend URL from Step 3)
+   - **IMPORTANT**: Make sure the URL ends with `/api` (no trailing slash)
+   - Example: `https://social-post-backend-hs3e.onrender.com/api`
 
 6. Click "Deploy"
 
 7. Wait for deployment (2-5 minutes)
 
 8. Your app will be live at `https://your-app.vercel.app`
+
+**Note**: The repository includes a `.env.production` file. Vercel will automatically use this, but you should still set the environment variable in Vercel dashboard to override it with your actual backend URL.
 
 ### Option B: Using Netlify
 
@@ -153,11 +157,26 @@ Fill out the submission form with:
 **Problem**: "Internal Server Error"
 - **Solution**: Check Render logs. Go to your service → "Logs" tab
 
+**Problem**: CORS errors blocking requests
+- **Solution**: Ensure your frontend URL is added to the CORS configuration in `backend/server.js`
+- **Solution**: After updating, redeploy the backend on Render (it will auto-deploy from GitHub)
+
 ### Frontend Issues
 
 **Problem**: "Network Error" or "Failed to fetch"
-- **Solution**: Verify `REACT_APP_API_URL` is set correctly with `/api` at the end
+- **Solution**: Verify `REACT_APP_API_URL` is set correctly with `/api` at the end (no trailing slash)
 - **Solution**: Check CORS settings in backend
+- **Solution**: Wait 1-2 minutes after backend deployment for Render to fully start
+
+**Problem**: "404 Not Found" on API calls
+- **Solution**: Double-check the `REACT_APP_API_URL` environment variable
+- **Solution**: Make sure it points to your Render backend URL + `/api`
+- **Example**: `https://social-post-backend-hs3e.onrender.com/api`
+
+**Problem**: CORS policy errors in browser console
+- **Solution**: Your Vercel frontend URL must be added to backend CORS settings
+- **Solution**: Redeploy backend after adding frontend URL to `server.js`
+- **Solution**: Clear browser cache and try again
 
 **Problem**: Images not loading
 - **Solution**: This is expected on Render free tier (no persistent storage)
