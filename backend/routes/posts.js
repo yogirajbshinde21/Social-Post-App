@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const { protect } = require('../middleware/auth');
-const upload = require('../middleware/upload');
+const upload = require('../middleware/cloudinaryUpload'); // Changed to Cloudinary upload
 const Post = require('../models/Post');
 const Notification = require('../models/Notification');
 
@@ -12,11 +12,8 @@ const Notification = require('../models/Notification');
 router.post('/', protect, upload.single('image'), async (req, res) => {
   try {
     const { text } = req.body;
-    // Create absolute URL for images in production
-    const baseURL = process.env.NODE_ENV === 'production' 
-      ? process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`
-      : '';
-    const image = req.file ? `${baseURL}/uploads/${req.file.filename}` : null;
+    // Cloudinary returns the full URL in req.file.path
+    const image = req.file ? req.file.path : null;
 
     // Validate that at least text or image is provided
     if (!text && !image) {

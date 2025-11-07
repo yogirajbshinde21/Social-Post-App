@@ -34,7 +34,19 @@ const PostCard = ({ post, currentUser, onUpdate, onDelete }) => {
   const isLiked = post.likes?.includes(currentUser?._id);
   const isOwnPost = post.user?._id === currentUser?._id;
 
-  const API_BASE_URL = process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000';
+  // Helper function to get proper image URL
+  const getImageUrl = (imageUrl) => {
+    if (!imageUrl) return null;
+    
+    // If it's already a full URL (from Cloudinary), return as is
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return imageUrl;
+    }
+    
+    // Otherwise, it's a local path (for backward compatibility)
+    const API_BASE_URL = process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000';
+    return `${API_BASE_URL}${imageUrl}`;
+  };
 
   const handleLike = async () => {
     try {
@@ -154,12 +166,17 @@ const PostCard = ({ post, currentUser, onUpdate, onDelete }) => {
       {post.image && (
         <Box
           component="img"
-          src={`${API_BASE_URL}${post.image}`}
+          src={getImageUrl(post.image)}
           alt="Post"
           sx={{
             width: '100%',
             maxHeight: 500,
             objectFit: 'cover',
+          }}
+          onError={(e) => {
+            console.error('Image failed to load:', post.image);
+            // Hide image if it fails to load
+            e.target.style.display = 'none';
           }}
         />
       )}
